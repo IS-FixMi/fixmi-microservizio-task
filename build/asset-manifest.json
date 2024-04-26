@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.2ee8ba9c.css",
+    "main.js": "/static/js/main.e6bfe591.js",
+    "static/media/fixmi-logo.png": "/static/media/fixmi-logo.7c93ceff32dab479d170.png",
+    "index.html": "/index.html",
+    "main.2ee8ba9c.css.map": "/static/css/main.2ee8ba9c.css.map",
+    "main.e6bfe591.js.map": "/static/js/main.e6bfe591.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2ee8ba9c.css",
+    "static/js/main.e6bfe591.js"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "entryPoints": [
+    "backend/server.ts"
+  ],
+  "includes": [
+    "backend/routes"
+  ]
+}
