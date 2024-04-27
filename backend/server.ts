@@ -10,6 +10,7 @@ import express from 'express';
 
 // Routes
 import greetRouter from './routes/greetRoutes';
+import testTaskRouter from './routes/testTaskRouter';
 
 // Get variables from .env file
 require('dotenv').config();
@@ -34,7 +35,10 @@ app.use(function(req, res, next) {
 
 // ------------------ ROUTES ------------------
 
+
+// Testing
 app.use("/api/greet", greetRouter);
+app.use("/api/testTask", testTaskRouter);
 
 
 // Run server
