@@ -13,6 +13,7 @@ import express from 'express';
 import greetRouter from './routes/greetRouter';
 import testTaskRouter from './routes/testTaskRouter';
 import testDBRouter from './routes/testDBRouter';
+import getListaTaskInLavorazioneRouter from './routes/getListaTaskInLavorazioneRouter';
 
 // Get variables from .env file
 require('dotenv').config();
@@ -70,6 +71,7 @@ app.use(function(req, res, next) {
 app.use("/api/greet", greetRouter);
 app.use("/api/testTask", testTaskRouter);
 app.use("/api/testDB", testDBRouter);
+app.use("/api/getListaTaskInLavorazione", getListaTaskInLavorazioneRouter);
 
 // Run server
 app.listen(port, () => {
