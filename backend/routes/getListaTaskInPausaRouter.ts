@@ -1,8 +1,8 @@
 /*
- *   File: getlistaTaskInLavorazioneRouter.ts 
+ *   File: getlistaTaskInPausaRouter.ts 
  *
  *   Purpose: this file contains all the routes after
- *            /api/tasks/getListaTaskInLavorazione
+ *            /api/tasks/getListaTaskInPausa
  *            It returns all the tasks in the database
  *            that are in progress
  *
@@ -23,15 +23,15 @@ import {AUTH_IP} from '../server';   // Authentication
 const debug = true;
 
 // Route:
-// /api/tasks/getListaTaskInLavorazione
+// /api/tasks/getListaTaskInPausa
 //
 // method:
 // POST
 //
 // description:
-// returns all the tasks in the database that are in progress
+// returns all the tasks in the database that are in pause
 //
-// body:
+// body / cookie:
 // token
 //
 // responses:
@@ -39,11 +39,11 @@ const debug = true;
 // 400 {error: "missing fields", missingFields}
 // 400 {error: "user not found with the given token"}
 // 400 {error: "User not authorized"}
-const getListaTaskInLavorazioneRouter = express.Router();
+const getListaTaskInPausaRouter = express.Router();
 
 
 // Main logic
-getListaTaskInLavorazioneRouter.post('/', async (req, res) => {
+getListaTaskInPausaRouter.post('/', async (req, res) => {
 
   try {
     let token = getToken(req);
@@ -89,7 +89,7 @@ getListaTaskInLavorazioneRouter.post('/', async (req, res) => {
 
 });
 
-export default getListaTaskInLavorazioneRouter;
+export default getListaTaskInPausaRouter;
 
 
 // This function returns the token from the request
@@ -180,16 +180,16 @@ async function executeQuery(profileId, permission) {
 
     dbg("Executing query", "");
    
-    // The manager can see all the tasks in lavorazione
+    // The manager can see all the tasks in pause
     if (permission == 'Manager') {
     
       return db.collection("tasks")
-          .find({ taskStatus: 'In Lavorazione' })
+          .find({ taskStatus: 'In Pausa' })
           .toArray();
     }
 
     return db.collection("tasks")
-        .find({ taskStatus: 'In Lavorazione', assignedTo: profileId })
+        .find({ taskStatus: 'In Pausa', assignedTo: profileId })
         .toArray();
 }
 
@@ -198,5 +198,5 @@ async function executeQuery(profileId, permission) {
 // value: the value of the variable
 function dbg(name, value) {
   if (!debug) return;
-  console.log("(DEBUG /api/tasks/getListaTaskInLavorazione) " + name + ": " + value);
+  console.log("(DEBUG /api/tasks/getListaTaskInPausa) " + name + ": " + value);
 }

@@ -3,7 +3,7 @@
  *   File: testTaskRouter.ts 
  *
  *   Purpose: this file contains all the routes after
- *            /api/testTask
+ *            /api/tasks/testTask
  *            It is used to test the all Task classes
  *            and their methods by creating a test Task
  *            for each type and printing it to the console

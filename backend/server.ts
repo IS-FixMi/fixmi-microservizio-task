@@ -7,13 +7,16 @@
 
 // Express
 import express from 'express';
-
+import bodyParser from "body-parser";
+const cookieParser = require("cookie-parser");
 
 // Routes
 import greetRouter from './routes/greetRouter';
 import testTaskRouter from './routes/testTaskRouter';
 import testDBRouter from './routes/testDBRouter';
 import getListaTaskInLavorazioneRouter from './routes/getListaTaskInLavorazioneRouter';
+import getListaTaskDaEseguireRouter from './routes/getListaTaskDaEseguireRouter';
+import getListaTaskInPausaRouter from './routes/getListaTaskInPausaRouter';
 
 // Get variables from .env file
 require('dotenv').config();
@@ -21,6 +24,9 @@ require('dotenv').config();
 const app = express();
 const port = process.env.REACT_APP_BACKEND_PORT || 3001;
 
+// ------------ AUTH SERVER -------------
+
+export const AUTH_IP = process.env.MICROSERVIZIO_AUTH_IP || "10.5.0.11";
 
 // ------------ MONGODB -------------
 
@@ -64,14 +70,20 @@ app.use(function(req, res, next) {
   });
 
 
+// ------------ MIDDLEWARE -------------
+
+app.use(bodyParser.urlencoded());
+app.use(cookieParser());
+
 // ------------------ ROUTES ------------------
 
+app.use("/api/tasks/greet", greetRouter);
+app.use("/api/tasks/testTask", testTaskRouter);
+app.use("/api/tasks/testDB", testDBRouter);
+app.use("/api/tasks/getListaTaskInLavorazione", getListaTaskInLavorazioneRouter);
+app.use("/api/tasks/getListaTaskDaEseguire", getListaTaskDaEseguireRouter);
+app.use("/api/tasks/getListaTaskInPausa", getListaTaskInPausaRouter);
 
-// Testing
-app.use("/api/greet", greetRouter);
-app.use("/api/testTask", testTaskRouter);
-app.use("/api/testDB", testDBRouter);
-app.use("/api/getListaTaskInLavorazione", getListaTaskInLavorazioneRouter);
 
 // Run server
 app.listen(port, () => {

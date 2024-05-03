@@ -1,10 +1,10 @@
 /*
- *   File: getlistaTaskInLavorazioneRouter.ts 
+ *   File: getlistaTaskDaEseguireRouter.ts 
  *
  *   Purpose: this file contains all the routes after
- *            /api/tasks/getListaTaskInLavorazione
+ *            /api/tasks/getListaTaskDaEseguire
  *            It returns all the tasks in the database
- *            that are in progress
+ *            that are yet to be executed
  *
  */ 
 
@@ -23,15 +23,15 @@ import {AUTH_IP} from '../server';   // Authentication
 const debug = true;
 
 // Route:
-// /api/tasks/getListaTaskInLavorazione
+// /api/tasks/getListaTaskDaEseguire
 //
 // method:
 // POST
 //
 // description:
-// returns all the tasks in the database that are in progress
+// returns all the tasks in the database that are yet to be executed
 //
-// body:
+// body / cookie:
 // token
 //
 // responses:
@@ -39,21 +39,17 @@ const debug = true;
 // 400 {error: "missing fields", missingFields}
 // 400 {error: "user not found with the given token"}
 // 400 {error: "User not authorized"}
-const getListaTaskInLavorazioneRouter = express.Router();
+const getListaTaskDaEseguireRouter = express.Router();
 
 
 // Main logic
-getListaTaskInLavorazioneRouter.post('/', async (req, res) => {
+getListaTaskDaEseguireRouter.post('/', async (req, res) => {
 
   try {
     let token = getToken(req);
 
     // Check authentication
     getProfileInfo(token).then(profile => {
-
-    // Get the profile id
-    let profileId = getProfileId(profile);
-    let permission = getPermission(profile);
 
     // Check authorization
     if (!isAuthorized(profile)) {
@@ -62,7 +58,7 @@ getListaTaskInLavorazioneRouter.post('/', async (req, res) => {
     }              
 
     // Query the DB
-    executeQuery(profileId, permission).then(allTasks => {
+    executeQuery().then(allTasks => {
 
     dbg("AllTasks", JSON.stringify(allTasks));
     
@@ -89,7 +85,7 @@ getListaTaskInLavorazioneRouter.post('/', async (req, res) => {
 
 });
 
-export default getListaTaskInLavorazioneRouter;
+export default getListaTaskDaEseguireRouter;
 
 
 // This function returns the token from the request
@@ -148,15 +144,6 @@ async function getProfileInfo(token) {
   });
 }
 
-// Get the profile id
-function getProfileId(profile) {
-  return profile.user_info.id;
-}
-
-// Get the permission
-function getPermission(profile) {
-  return profile.user_info.permission;
-}
 
 // Check if the user is authorized
 function isAuthorized(profile) {
@@ -176,20 +163,12 @@ function isAuthorized(profile) {
 
 
 // Query the DB
-async function executeQuery(profileId, permission) {
+async function executeQuery() {
 
     dbg("Executing query", "");
-   
-    // The manager can see all the tasks in lavorazione
-    if (permission == 'Manager') {
     
-      return db.collection("tasks")
-          .find({ taskStatus: 'In Lavorazione' })
-          .toArray();
-    }
-
     return db.collection("tasks")
-        .find({ taskStatus: 'In Lavorazione', assignedTo: profileId })
+        .find({ taskStatus: 'Da Eseguire' })
         .toArray();
 }
 
@@ -198,5 +177,5 @@ async function executeQuery(profileId, permission) {
 // value: the value of the variable
 function dbg(name, value) {
   if (!debug) return;
-  console.log("(DEBUG /api/tasks/getListaTaskInLavorazione) " + name + ": " + value);
+  console.log("(DEBUG /api/tasks/getListaTaskDaEseguire) " + name + ": " + value);
 }

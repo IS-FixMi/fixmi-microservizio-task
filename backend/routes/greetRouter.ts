@@ -2,7 +2,7 @@
  *   File: greetRoutes.ts 
  *
  *   Purpose: this file contains all the routes after
- *            /api/greet
+ *            /api/tasks/greet
  *            It is used to greet the user with a message
  *
  */ 
