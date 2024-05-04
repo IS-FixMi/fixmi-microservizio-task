@@ -1,11 +1,10 @@
 /*
- *   File: getlistaTaskDaEseguireRouter.ts 
+ *   File: scegiTask.ts 
  *
  *   Purpose: this file contains all the routes after
- *            /api/tasks/getListaTaskDaEseguire
- *            It returns all the tasks in the database
- *            that are yet to be executed
- *
+ *            /api/tasks/scegliTask
+ *            It makes the enployee choose a task
+ *            and assign it to himself
  */ 
 
 import express from 'express' 
@@ -19,27 +18,31 @@ import { db } from '../server';
 import {AUTH_IP, DEBUG} from '../server';   // Authentication
 
 // Route:
-// /api/tasks/getListaTaskDaEseguire
+// /api/tasks/scegliTask
 //
 // method:
 // POST
 //
 // description:
-// returns all the tasks in the database that are yet to be executed
+// This route lets an employee choose a task
 //
 // body / cookie:
-// token
+// - token
+//
+// body:
+// - taskid
 //
 // responses:
 // 200 {task1, task2, ...}
 // 400 {error: "missing fields", missingFields}
 // 400 {error: "user not found with the given token"}
 // 400 {error: "User not authorized"}
-const getListaTaskDaEseguireRouter = express.Router();
+// 400 {error: "task not found"}
+const scegliTaskRouter = express.Router();
 
 
 // Main logic
-getListaTaskDaEseguireRouter.post('/', async (req, res) => {
+scegliTaskRouter.post('/', async (req, res) => {
 
   try {
 
@@ -57,21 +60,31 @@ getListaTaskDaEseguireRouter.post('/', async (req, res) => {
     }              
 
 
-    // Query the DB
-    executeQuery().then(allTasks => {
+    // Check if the task exists
+    taskExists(req).then(task => {
 
-    dbg("AllTasks", JSON.stringify(allTasks));
-    
+
+    // Query the DB
+    let profileId = getProfileId(profile);
+    let taskId = getTaskId(req);
+    executeQuery(profileId, taskId).then(ret => {
+
     // OK
-    // Return the tasks
-    res.json(allTasks);
-    
+    res.status(200);
+    res.json({'Success': 'Task assigned to the user'});
+
     // Errors
     }).catch(e => { 
+      // DB error
       dbg("(ERROR)", e);
       res.status(400);
       res.json(JSON.parse(e.message));
-    });}).catch(e => { 
+    });}).catch(e => {
+      // task not found
+      res.status(400);
+      res.json(JSON.parse(e.message));
+    });}).catch(e => {
+      // user not authenticated
       dbg("(ERROR)", e);
       res.status(400);
       res.json(JSON.parse(e.message));
@@ -79,6 +92,7 @@ getListaTaskDaEseguireRouter.post('/', async (req, res) => {
   
   }
   catch(e) {
+    // Missing fields / user not authorized
     dbg("(ERROR)", e);
     res.status(400);
     res.json(JSON.parse(e.message));
@@ -87,7 +101,7 @@ getListaTaskDaEseguireRouter.post('/', async (req, res) => {
 
 });
 
-export default getListaTaskDaEseguireRouter;
+export default scegliTaskRouter;
 
 
 // This function returns the token from the request
@@ -147,6 +161,48 @@ async function getProfileInfo(token) {
 }
 
 
+// Check if a task exists with the given taskId
+async function taskExists(req) {
+
+  let taskId = getTaskId(req);
+
+  // Check if the token is missing
+  let missingFields = getMissingFields([["taskid", taskId ]]);
+  if (missingFields.length != 0) {
+    let e = {'value': 'Missing fields', missingfields: missingFields };
+    throw new JSONError(e);
+  }
+
+  // Used for testing purposes
+  if (taskId == 'test') return;
+
+  return db.collection("tasks")
+      .findOne({ taskid: taskId })
+      .then(task => {
+        if (task == null) {
+          let e = {'value': 'Task not found'};
+          throw new JSONError(e);
+        }
+        return task;
+      });
+}
+
+
+// Get the profile id
+function getProfileId(profile) {
+  return profile.user_info.id;
+}
+
+// Get the permission
+function getPermission(profile) {
+  return profile.user_info.permission;
+}
+
+// Get the task id
+function getTaskId(req) {
+  return req.body.taskid;
+}
+
 // Check if the user is authorized
 function isAuthorized(profile) {
 
@@ -165,13 +221,15 @@ function isAuthorized(profile) {
 
 
 // Query the DB
-async function executeQuery() {
+async function executeQuery(profileId, taskId) {
 
     dbg("Executing query", "");
-    
+  
+    // Used for testing purposes
+    if (taskId == 'test') return;
+
     return db.collection("tasks")
-        .find({ "taskStatus": 'Da Eseguire' })
-        .toArray();
+        .updateOne({ taskid: taskId }, { $set: { assignedTo: profileId } });
 }
 
 // Prints a debug message if debug is enabled
@@ -179,5 +237,5 @@ async function executeQuery() {
 // value: the value of the variable
 function dbg(name, value) {
   if (!DEBUG) return;
-  console.log("(DEBUG /api/tasks/getListaTaskDaEseguire) " + name + ": " + value);
+  console.log("(DEBUG /api/tasks/scegliTask) " + name + ": " + value);
 }

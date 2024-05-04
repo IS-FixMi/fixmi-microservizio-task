@@ -19,24 +19,24 @@ import TaskMagazzino from '../classes/TaskMagazzino';
 
 // Create a test Task for each type
 const taskRiparazione = new TaskRiparazione('Task1',
-                'Description1', 'Da Eseguire', 1,
+                'Description1',
                 'Mario', 'Rossi', 'email@email.com',
                 '3334445566');
 
 const taskAssistenza = new TaskAssistenza('Task2',
-                'Description2', 'In lavorazione', 2,
+                'Description2',
                 'email@email.com');
 
 const taskFeedback = new TaskFeedback('Task3',
-                'Description3', 'Completata', 3,
+                'Description3',
                 'Idea', 'disponibilissimo', 'velocissimo',
                 'soddisfattissimo', 'soddisfattissimo');
 
 const taskNegozio = new TaskNegozio('Task4',
-                'Description4', 'In lavorazione', 4);
+                'Description4');
 
 const taskMagazzino = new TaskMagazzino('Task5',
-                'Description5', 'Completata', 5);
+                'Description5');
 
 // '/api/greet'
 const testTaskRouter = express.Router();

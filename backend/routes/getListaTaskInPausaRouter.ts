@@ -16,11 +16,8 @@ import cookieParser from 'cookie-parser'
 const {MongoClient} = require("mongodb"); // DB
 import { db } from '../server';
 
-import {AUTH_IP} from '../server';   // Authentication
+import {AUTH_IP, DEBUG} from '../server';   // Authentication
 
-
-// Allow debug prints
-const debug = true;
 
 // Route:
 // /api/tasks/getListaTaskInPausa
@@ -46,14 +43,18 @@ const getListaTaskInPausaRouter = express.Router();
 getListaTaskInPausaRouter.post('/', async (req, res) => {
 
   try {
+
     let token = getToken(req);
+
 
     // Check authentication
     getProfileInfo(token).then(profile => {
 
+
     // Get the profile id
     let profileId = getProfileId(profile);
     let permission = getPermission(profile);
+
 
     // Check authorization
     if (!isAuthorized(profile)) {
@@ -61,14 +62,17 @@ getListaTaskInPausaRouter.post('/', async (req, res) => {
         throw new JSONError(e);
     }              
 
+
     // Query the DB
     executeQuery(profileId, permission).then(allTasks => {
 
     dbg("AllTasks", JSON.stringify(allTasks));
     
+    // OK
     // Return the tasks
     res.json(allTasks);
     
+    // Errors
     }).catch(e => { 
       dbg("(ERROR)", e);
       res.status(400);
@@ -189,7 +193,7 @@ async function executeQuery(profileId, permission) {
     }
 
     return db.collection("tasks")
-        .find({ taskStatus: 'In Pausa', assignedTo: profileId })
+        .find({ 'taskStatus': 'In Pausa', 'assignedTo': profileId })
         .toArray();
 }
 
@@ -197,6 +201,6 @@ async function executeQuery(profileId, permission) {
 // name: the name of the variable
 // value: the value of the variable
 function dbg(name, value) {
-  if (!debug) return;
+  if (!DEBUG) return;
   console.log("(DEBUG /api/tasks/getListaTaskInPausa) " + name + ": " + value);
 }

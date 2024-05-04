@@ -1,11 +1,11 @@
 /*
- *   File: getlistaTaskDaEseguireRouter.ts 
+ *   File: getStoricoTaskRotuer.ts 
  *
  *   Purpose: this file contains all the routes after
- *            /api/tasks/getListaTaskDaEseguire
+ *            /api/tasks/getStoricoTask
  *            It returns all the tasks in the database
- *            that are yet to be executed
- *
+ *            that are completed and assigned to the user
+ *            - if the user is a manager, it returns all the tasks
  */ 
 
 import express from 'express' 
@@ -18,14 +18,16 @@ import { db } from '../server';
 
 import {AUTH_IP, DEBUG} from '../server';   // Authentication
 
+
 // Route:
-// /api/tasks/getListaTaskDaEseguire
+// /api/tasks/getStoricoTask
 //
 // method:
 // POST
 //
 // description:
-// returns all the tasks in the database that are yet to be executed
+// returns all the tasks in the database that are completed
+// and assigned to the user
 //
 // body / cookie:
 // token
@@ -35,11 +37,11 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 // 400 {error: "missing fields", missingFields}
 // 400 {error: "user not found with the given token"}
 // 400 {error: "User not authorized"}
-const getListaTaskDaEseguireRouter = express.Router();
+const getStoricoTaskRouter = express.Router();
 
 
 // Main logic
-getListaTaskDaEseguireRouter.post('/', async (req, res) => {
+getStoricoTaskRouter.post('/', async (req, res) => {
 
   try {
 
@@ -50,6 +52,11 @@ getListaTaskDaEseguireRouter.post('/', async (req, res) => {
     getProfileInfo(token).then(profile => {
 
 
+    // Get the profile id
+    let profileId = getProfileId(profile);
+    let permission = getPermission(profile);
+
+
     // Check authorization
     if (!isAuthorized(profile)) {
         let e = {'value': 'User not authorized'};
@@ -58,7 +65,7 @@ getListaTaskDaEseguireRouter.post('/', async (req, res) => {
 
 
     // Query the DB
-    executeQuery().then(allTasks => {
+    executeQuery(profileId, permission).then(allTasks => {
 
     dbg("AllTasks", JSON.stringify(allTasks));
     
@@ -87,7 +94,7 @@ getListaTaskDaEseguireRouter.post('/', async (req, res) => {
 
 });
 
-export default getListaTaskDaEseguireRouter;
+export default getStoricoTaskRouter;
 
 
 // This function returns the token from the request
@@ -146,6 +153,15 @@ async function getProfileInfo(token) {
   });
 }
 
+// Get the profile id
+function getProfileId(profile) {
+  return profile.user_info.id;
+}
+
+// Get the permission
+function getPermission(profile) {
+  return profile.user_info.permission;
+}
 
 // Check if the user is authorized
 function isAuthorized(profile) {
@@ -165,12 +181,20 @@ function isAuthorized(profile) {
 
 
 // Query the DB
-async function executeQuery() {
+async function executeQuery(profileId, permission) {
 
     dbg("Executing query", "");
+   
+    // The manager can see all the tasks in lavorazione
+    if (permission == 'Manager') {
     
+      return db.collection("tasks")
+          .find({ taskStatus: 'Completata' })
+          .toArray();
+    }
+
     return db.collection("tasks")
-        .find({ "taskStatus": 'Da Eseguire' })
+        .find({ 'taskStatus': 'Completata', 'assignedTo': profileId })
         .toArray();
 }
 
@@ -179,5 +203,5 @@ async function executeQuery() {
 // value: the value of the variable
 function dbg(name, value) {
   if (!DEBUG) return;
-  console.log("(DEBUG /api/tasks/getListaTaskDaEseguire) " + name + ": " + value);
+  console.log("(DEBUG /api/tasks/getStoricoTask) " + name + ": " + value);
 }

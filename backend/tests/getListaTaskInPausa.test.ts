@@ -2,7 +2,7 @@ const request = require('supertest');
 
 describe('Testing /api/tasks/getListaTaskInPausa', () => {
 
-  it('Sending requist with missing fields, should return 400', async () => {
+  it('Sending request with missing fields, should return 400', async () => {
     const response = await request('10.5.0.12:3001')
         .post('/api/tasks/getListaTaskInPausa');
     expect(response.status).toBe(400);

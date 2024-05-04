@@ -1,4 +1,4 @@
-export default enum TaskTag {
+export enum TaskTag {
     Negozio = 'Negozio',
     Riparazione = 'Riparazione',
     Magazzino = 'Magazzino',

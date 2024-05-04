@@ -1,16 +1,16 @@
 const request = require('supertest');
 
-describe('Testing /api/tasks/getListaTaskDaEseguire', () => {
+describe('Testing /api/tasks/getStoricoTask', () => {
 
   it('Sending request with missing fields, should return 400', async () => {
     const response = await request('10.5.0.12:3001')
-        .post('/api/tasks/getListaTaskDaEseguire');
+        .post('/api/tasks/getStoricoTask');
     expect(response.status).toBe(400);
   });
 
   it('Sending a wring token, should return 400 user not found with given token', async () => {
     const response = await request('10.5.0.12:3001')
-           .post('/api/tasks/getListaTaskDaEseguire')
+           .post('/api/tasks/getStoricoTask')
            .type('form')
            .send({token: "fake"});
     expect(response.status).toBe(400);
@@ -27,7 +27,7 @@ describe('Testing /api/tasks/getListaTaskDaEseguire', () => {
 
     // sending the request
     const response = await request('10.5.0.12:3001')
-           .post('/api/tasks/getListaTaskDaEseguire')
+           .post('/api/tasks/getStoricoTask')
            .type('form')
            .send({token: token});
     expect(response.status).toBe(400);
@@ -44,7 +44,7 @@ describe('Testing /api/tasks/getListaTaskDaEseguire', () => {
 
     // sending the request
     const response = await request('10.5.0.12:3001')
-           .post('/api/tasks/getListaTaskDaEseguire')
+           .post('/api/tasks/getStoricoTask')
            .type('form')
            .send({token: token});
     expect(response.status).toBe(200);
