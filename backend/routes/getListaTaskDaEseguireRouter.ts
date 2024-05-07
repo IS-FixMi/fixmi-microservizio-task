@@ -12,6 +12,8 @@ import express from 'express'
 import getMissingFields from '../misc/missingFields'
 import JSONError from '../misc/JSONError'
 import cookieParser from 'cookie-parser'
+import getToken from '../misc/getToken'
+import getProfileInfo from '../misc/getProfileInfo'
 
 const {MongoClient} = require("mongodb"); // DB
 import { db } from '../server';
@@ -88,63 +90,6 @@ getListaTaskDaEseguireRouter.post('/', async (req, res) => {
 });
 
 export default getListaTaskDaEseguireRouter;
-
-
-// This function returns the token from the request
-function getToken(req) {
-
-  let token;
-
-  // getting the token from the request body
-  token = req.body.token;
-  dbg("Token", token);
-
-  if (token == undefined) {
-    // getting the token from the cookie
-    dbg("Cookies", cookieParser.JSONCookie(req.cookies));
-    token = req.cookies.token;
-  }
-
-  // Check if the token is missing
-  let missingFields = getMissingFields([["token", token]]);
-  if (missingFields.length != 0) {
-    let e = {'value': 'Missing fields', missingfields: missingFields };
-    throw new JSONError(e);
-  }
-
-  return token;
-}
-
-
-// This function returns the profile info from the authentication microservice
-async function getProfileInfo(token) {
-
-  // Preparing the query for the authentication microservice
-  const formData = new URLSearchParams();
-  formData.append('token', token);
-  const authentication_url = "http://"      // protocol
-                             + AUTH_IP +    // ip
-                             ":3001" +      // port
-                             "/api/auth/authenticate"; // path
-
-  // Fetching the profile info
-  return await fetch(authentication_url, {
-    method: 'POST',
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: formData.toString()
-  }).then(response => {
-
-  if(!response.ok) {
-    let e = {'value': 'User not found with the given token'};
-    throw new JSONError(e);
-  }
-
-  return response.json();
-  });
-}
 
 
 // Check if the user is authorized
