@@ -2,7 +2,7 @@
  *   File: testDBRouter.ts 
  *
  *   Purpose: this file contains all the routes after
- *            /api/testDB
+ *            /api/tasks/testDB
  *            It is used to test the connection to the database
  *
  */ 

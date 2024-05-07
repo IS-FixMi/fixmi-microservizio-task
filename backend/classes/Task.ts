@@ -1,24 +1,34 @@
-import TaskTag from '../enums/TaskTag';
-import TaskStatus from '../enums/TaskStatus';
+import { TaskTag } from '../enums/TaskTag';
+import { TaskStatus } from '../enums/TaskStatus';
+
+import { ObjectId } from 'mongodb';
 
 // Abstract class
-export default class Task {
+export default abstract  class Task {
 
     #name: String;
     #description: String;
     #taskTag: TaskTag;
     #taskStatus: TaskStatus;
-    #taskid: Number;
+    #taskid: ObjectId;
+    #assignedTo: String;
+
+    // Empty constructor
+    constructor();
 
     constructor(name: String, description: String,
-                taskTag: TaskTag, taskStatus: TaskStatus,
-                taskid: Number) {
+                taskTag: TaskTag);
+
+    constructor(name?: String, description?: String,
+                taskTag?: TaskTag) {
 
         this.#name = name;
         this.#description = description;
         this.#taskTag = taskTag;
-        this.#taskStatus = taskStatus;
-        this.#taskid = taskid;
+        this.#taskStatus = TaskStatus.DaEseguire;
+        this.#taskid = new ObjectId();
+        this.#assignedTo = null; // When a task is created,
+                                 // it is not assigned to anyone
     }
 
     getName(): String {
@@ -29,7 +39,7 @@ export default class Task {
         return this.#description;
     }
 
-    getTaskTag(): TaskTag[] {
+    getTaskTag(): TaskTag {
         return this.#taskTag;
     }
 
@@ -37,12 +47,23 @@ export default class Task {
         return this.#taskStatus;
     }
 
-    getTaskId(): Number {
-        return this.#taskid;
-    }
-
     setStatus(taskStatus: TaskStatus) {
         this.#taskStatus = taskStatus;
     }
 
+    getTaskId(): String {
+        return this.#taskid.toString();
+    }
+
+    getAssignedTo(): String {
+        return this.#assignedTo;
+    }
+
+    setAssignedTo(assignedTo: String) {
+        this.#assignedTo = assignedTo;
+    }
+
+    toJSON(): Object {
+        return {};
+    }
 }

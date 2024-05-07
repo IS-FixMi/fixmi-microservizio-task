@@ -1,7 +1,5 @@
 import TaskSupporto from './TaskSupporto';
-
-import TaskTag from '../enums/TaskTag';
-import TaskStatus from '../enums/TaskStatus';
+import { TaskTag } from '../enums/TaskTag';
 
 export default class TaskFeedback extends TaskSupporto {
 
@@ -11,14 +9,22 @@ export default class TaskFeedback extends TaskSupporto {
     #soddisfazioneRiparazione: String;
     #soddisfazioneSitoWeb: String;
 
+    // Empty constructor
+    constructor();
+
     constructor(name: String, description: String,
-                taskStatus: TaskStatus, taskId: Number,
                 ideePerMigliorare: String, disponibilitaAzienda: String,
                 velocitaRiparazione: String,
                 soddisfazioneRiparazione: String,
-                soddisfazioneSitoWeb: String) {
+                soddisfazioneSitoWeb: String);
 
-        super(name, description, 'Feedback', taskStatus, taskId);
+    constructor(name?: String, description?: String,
+                ideePerMigliorare?: String, disponibilitaAzienda?: String,
+                velocitaRiparazione?: String,
+                soddisfazioneRiparazione?: String,
+                soddisfazioneSitoWeb?: String) {
+
+        super(name, description, TaskTag.Feedback);
 
         this.#ideePerMigliorare = ideePerMigliorare;
         this.#disponibilitaAzienda = disponibilitaAzienda;
@@ -58,7 +64,8 @@ export default class TaskFeedback extends TaskSupporto {
             disponibilitaAzienda: this.getDisponibilitaAzienda(),
             velocitaRiparazione: this.getVelocitaRiparazione(),
             soddisfazioneRiparazione: this.getSoddisfazioneRiparazione(),
-            soddisfazioneSitoWeb: this.getSoddisfazioneSitoWeb()
+            soddisfazioneSitoWeb: this.getSoddisfazioneSitoWeb(),
+            assignedTo: this.getAssignedTo()
         };
     }
 

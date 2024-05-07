@@ -1,7 +1,5 @@
 import Task from './Task';
-
-import TaskTag from '../enums/TaskTag';
-import TaskStatus from '../enums/TaskStatus';
+import { TaskTag } from '../enums/TaskTag';
 
 export default class TaskRiparazione extends Task {
 
@@ -11,12 +9,19 @@ export default class TaskRiparazione extends Task {
     // #images: Image[];
     #phoneNumber: String;
 
-    constructor(name: String, description: String,
-                taskStatus: TaskStatus, taskid: Number,
-                nomeRichiedente: String, cognomeRichiedente: String,
-                emailRichiedente: String, phoneNumber: String) {
+    // Empty constructor
+    constructor();
 
-        super(name, description, 'Riparazione', taskStatus, taskid);
+    constructor(name: String, description: String,
+                nomeRichiedente: String, cognomeRichiedente: String,
+                emailRichiedente: String, phoneNumber: String);
+
+
+    constructor(name?: String, description?: String,
+                nomeRichiedente?: String, cognomeRichiedente?: String,
+                emailRichiedente?: String, phoneNumber?: String) {
+
+        super(name, description, TaskTag.Riparazione);
 
         this.#nomeRichiedente = nomeRichiedente;
         this.#cognomeRichiedente = cognomeRichiedente;
@@ -50,7 +55,8 @@ export default class TaskRiparazione extends Task {
             nomeRichiedente: this.getNomeRichiedente(),
             cognomeRichiedente: this.getCongnomeRichiedente(),
             emailRichiedente: this.getEmailRichiedente(),
-            phoneNumber: this.getProneNumber()
+            phoneNumber: this.getProneNumber(),
+            assignedTo: this.getAssignedTo()
         };
     }
     

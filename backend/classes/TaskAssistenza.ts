@@ -1,17 +1,20 @@
 import TaskSupporto from './TaskSupporto';
-
-import TaskTag from '../enums/TaskTag';
-import TaskStatus from '../enums/TaskStatus';
+import { TaskTag } from '../enums/TaskTag';
 
 export default class TaskAssistenza extends TaskSupporto {
     
     #emailRichiedente: String;
 
-    constructor(name: String, description: String,
-                taskStatus: TaskStatus, taskid: Number,
-                emailRichiedente: String) {
+    // Empty constructor
+    constructor();
 
-        super(name, description, 'Assistenza', taskStatus, taskid);
+    constructor(name: String, description: String,
+                emailRichiedente: String);
+
+    constructor(name?: String, description?: String,
+                emailRichiedente?: String) {
+
+        super(name, description, TaskTag.Assistenza);
 
         this.#emailRichiedente = emailRichiedente;
     }
@@ -27,7 +30,8 @@ export default class TaskAssistenza extends TaskSupporto {
             description: this.getDescription(),
             taskTag: this.getTaskTag(),
             taskStatus: this.getStatus(),
-            emailRichiedente: this.getEmailRichiedente()
+            emailRichiedente: this.getEmailRichiedente(),
+            assignedTo: this.getAssignedTo()
         };
     }
 
