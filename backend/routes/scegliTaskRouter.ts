@@ -20,6 +20,7 @@ const {MongoClient} = require("mongodb"); // DB
 import { db } from '../server';
 
 import {AUTH_IP, DEBUG} from '../server';   // Authentication
+import { ObjectId } from 'mongodb'
 
 // Route:
 // /api/tasks/scegliTask
@@ -124,7 +125,7 @@ async function taskExists(req) {
   if (taskId == 'test') return;
 
   return db.collection("tasks")
-      .findOne({ taskid: taskId })
+      .findOne({ "taskid":new ObjectId(taskId) })
       .then(task => {
         if (task == null) {
           let e = {'value': 'Task not found'};
@@ -166,7 +167,7 @@ async function executeQuery(profileId, taskId) {
     if (taskId == 'test') return;
 
     return db.collection("tasks")
-        .updateOne({ taskid: taskId }, { $set: { assignedTo: profileId } });
+        .updateOne({ taskid: new ObjectId(taskId) }, { $set: { assignedTo: new ObjectId(profileId) } });
 }
 
 // Prints a debug message if debug is enabled
