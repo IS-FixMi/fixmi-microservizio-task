@@ -51,52 +51,57 @@ scegliTaskRouter.post('/', async (req, res) => {
   try {
 
     let token = getToken(req);
+    if (token == null) {
+        let e = {'value': 'Missing fields', missingfields: ['token']};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
+    }
 
 
     // Check authentication
-    getProfileInfo(token).then(profile => {
+    let profile = await getProfileInfo(token);
+    if (profile == null) {
+        let e = {'value': 'User not found with the given token'};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
+    }
 
 
     // Check authorization
     if (!isAuthorized(profile)) {
         let e = {'value': 'User not authorized'};
-        throw new JSONError(e);
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
     }              
 
 
     // Check if the task exists
-    taskExists(req).then(task => {
+    if (!taskExists(req)) {
+        let e = {'value': 'Task not found'};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
+    }
 
 
     // Query the DB
     let profileId = getProfileId(profile);
     let taskId = getTaskId(req);
-    executeQuery(profileId, taskId).then(ret => {
+    await executeQuery(profileId, taskId);
 
     // OK
     res.status(200);
     res.json({'Success': 'Task assigned to the user'});
 
-    // Errors
-    }).catch(e => { 
-      // DB error
-      dbg("(ERROR)", e);
-      res.status(400);
-      res.json(JSON.parse(e.message));
-    });}).catch(e => {
-      // task not found
-      res.status(400);
-      res.json(JSON.parse(e.message));
-    });}).catch(e => {
-      // user not authenticated
-      dbg("(ERROR)", e);
-      res.status(400);
-      res.json(JSON.parse(e.message));
-    });
-  
   }
   catch(e) {
-    // Missing fields / user not authorized
     dbg("(ERROR)", e);
     res.status(400);
     res.json(JSON.parse(e.message));
@@ -116,21 +121,19 @@ async function taskExists(req) {
   // Check if the token is missing
   let missingFields = getMissingFields([["taskid", taskId ]]);
   if (missingFields.length != 0) {
-    let e = {'value': 'Missing fields', missingfields: missingFields };
-    throw new JSONError(e);
+      return false;
   }
 
   // Used for testing purposes
-  if (taskId == 'test') return;
+  if (taskId == 'test') return true;
 
   return db.collection("tasks")
       .findOne({ taskid: taskId })
       .then(task => {
         if (task == null) {
-          let e = {'value': 'Task not found'};
-          throw new JSONError(e);
+            return false;
         }
-        return task;
+        return true;
       });
 }
 

@@ -10,16 +10,9 @@ export default function getToken(req) {
   // getting the token from the request body
   token = req.body.token;
 
-  if (token == undefined) {
+  if (token === undefined) {
     // getting the token from the cookie
     token = req.cookies.token;
-  }
-
-  // Check if the token is missing
-  let missingFields = getMissingFields([["token", token]]);
-  if (missingFields.length != 0) {
-    let e = {'value': 'Missing fields', missingfields: missingFields };
-    throw new JSONError(e);
   }
 
   return token;
