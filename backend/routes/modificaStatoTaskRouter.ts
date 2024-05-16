@@ -17,8 +17,6 @@ import getProfileInfo from '../misc/getProfileInfo'
 import getProfileId from '../misc/getProfileId'
 import getPermission from '../misc/getPermission'
 
-import {expect, jest, test} from '@jest/globals';
-
 const {MongoClient} = require("mongodb"); // DB
 import { db } from '../server';
 
@@ -99,7 +97,7 @@ modificaStatoTaskRouter.post('/', async (req, res) => {
 
 
     // Check if the status is correct
-    if (!checkStatus(req)) {
+    if (!checkStatus(statusVal)) {
         let e = {'value': 'Wrong status'};
         dbg("(ERROR)", JSON.stringify(e));
         res.status(400);
