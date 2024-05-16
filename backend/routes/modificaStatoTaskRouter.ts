@@ -21,6 +21,7 @@ const {MongoClient} = require("mongodb"); // DB
 import { db } from '../server';
 
 import {AUTH_IP, DEBUG} from '../server';   // Authentication
+import { ObjectId } from 'mongodb'
 
 // Route:
 // /api/tasks/modificaStatoTask
@@ -41,10 +42,10 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 // responses:
 // 200 {task1, task2, ...}
 // 400 {error: "missing fields", missingFields}
-// 400 {error: "user not found with the given token"}
-// 400 {error: "User not authorized"}
-// 400 {error: "task not found"}
-// 400 {error: "Wrong status"}
+// 401 {error: "user not found with the given token"}
+// 403 {error: "User not authorized"}
+// 400 {error: "Query error"}
+// 400 {error: "Task not found"}
 const modificaStatoTaskRouter = express.Router();
 
 
@@ -60,15 +61,18 @@ modificaStatoTaskRouter.post('/', async (req, res) => {
     getProfileInfo(token).then(profile => {
 
 
-    // Check if the status is correct
-    let statusVal = checkStatus(req);
-
-
     // Check authorization
     if (!isAuthorized(profile)) {
         let e = {'value': 'User not authorized'};
-        throw new JSONError(e);
+        dbg("(ERROR)", e);
+        res.status(403);
+        res.json(e);
+        return;
     }              
+
+
+    // Check if the status is correct
+    checkStatus(req).then(statusVal => {
 
 
     // Check if the task exists
@@ -96,9 +100,14 @@ modificaStatoTaskRouter.post('/', async (req, res) => {
       res.status(400);
       res.json(JSON.parse(e.message));
     });}).catch(e => {
-      // user not authenticated
+      // status not valid
       dbg("(ERROR)", e);
       res.status(400);
+      res.json(JSON.parse(e.message));
+    });}).catch(e => {
+      // user not found
+      dbg("(ERROR)", e);
+      res.status(401);
       res.json(JSON.parse(e.message));
     });
   
@@ -117,7 +126,7 @@ export default modificaStatoTaskRouter;
 
 
 // Check if the status is correct
-function checkStatus(req) {
+async function checkStatus(req) {
 
   let statusVal = req.body.taskStatus;
 
@@ -153,7 +162,7 @@ async function taskExists(req) {
   if (taskId == 'test') return;
 
   return db.collection("tasks")
-      .findOne({ taskid: taskId })
+      .findOne({ taskid: new ObjectId(taskId) })
       .then(task => {
         if (task == null) {
           let e = {'value': 'Task not found'};
@@ -195,7 +204,7 @@ async function executeQuery(taskId, statusVal) {
     if (taskId == 'test') return;
 
     return db.collection("tasks")
-        .updateOne({ taskid: taskId }, { $set: { taskStatus: statusVal } });
+        .updateOne({ taskid: new ObjectId(taskId) }, { $set: { taskStatus: statusVal } });
 }
 
 // Prints a debug message if debug is enabled
