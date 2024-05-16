@@ -39,7 +39,7 @@ describe('Testing /api/tasks/getListaTaskDaEseguire', () => {
     const resLogin = await request('10.5.0.11:3001')
             .post('/api/auth/login')
             .type('form')
-            .send({email:"test@test.com",password:"test",twofa:"12345"});
+            .send({email:"manager@test.com",password:"test",twofa:"12345"});
     let token = resLogin.body.token;
 
     // sending the request
