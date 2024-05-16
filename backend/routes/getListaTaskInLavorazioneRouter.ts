@@ -42,8 +42,9 @@ const debug = true;
 // responses:
 // 200 {task1, task2, ...}
 // 400 {error: "missing fields", missingFields}
-// 400 {error: "user not found with the given token"}
-// 400 {error: "User not authorized"}
+// 401 {error: "user not found with the given token"}
+// 403 {error: "User not authorized"}
+// 400 {error: "Query error"}
 const getListaTaskInLavorazioneRouter = express.Router();
 
 
@@ -67,7 +68,10 @@ getListaTaskInLavorazioneRouter.post('/', async (req, res) => {
     // Check authorization
     if (!isAuthorized(profile)) {
         let e = {'value': 'User not authorized'};
-        throw new JSONError(e);
+        dbg("(ERROR)", e);
+        res.status(403);
+        res.json(e);
+        return;
     }              
 
 
@@ -82,17 +86,20 @@ getListaTaskInLavorazioneRouter.post('/', async (req, res) => {
     
     // Errors
     }).catch(e => { 
+      // Error in the query
       dbg("(ERROR)", e);
       res.status(400);
       res.json(JSON.parse(e.message));
     });}).catch(e => { 
+      // User not found
       dbg("(ERROR)", e);
-      res.status(400);
+      res.status(401);
       res.json(JSON.parse(e.message));
     });
   
   }
   catch(e) {
+    // Missing fields
     dbg("(ERROR)", e);
     res.status(400);
     res.json(JSON.parse(e.message));

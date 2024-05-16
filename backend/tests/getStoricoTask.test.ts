@@ -8,15 +8,15 @@ describe('Testing /api/tasks/getStoricoTask', () => {
     expect(response.status).toBe(400);
   });
 
-  it('Sending a wring token, should return 400 user not found with given token', async () => {
+  it('Sending a wrong token, should return 401 user not found with given token', async () => {
     const response = await request('10.5.0.12:3001')
            .post('/api/tasks/getStoricoTask')
            .type('form')
            .send({token: "fake"});
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(401);
   });
 
-  it('Sending a token from a Cliente, should return 400 not allowed', async () => {
+  it('Sending a token from a Cliente, should return 403 not allowed', async () => {
   
     // getting the token
     const resLogin = await request('10.5.0.11:3001')
@@ -30,7 +30,7 @@ describe('Testing /api/tasks/getStoricoTask', () => {
            .post('/api/tasks/getStoricoTask')
            .type('form')
            .send({token: token});
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(403);
   });
 
   it('Sending the right token, should return 200 OK', async () => {
