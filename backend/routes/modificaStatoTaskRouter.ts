@@ -29,7 +29,7 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 // POST
 //
 // description:
-// This route lets anyone change the status of a task
+// This route lets quthenticated profiles change the status of a task
 //
 // body / cookie:
 // - token
@@ -39,12 +39,12 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 // - taskStatus
 //
 // responses:
-// 200 {task1, task2, ...}
+// 200 {Success: "Task status changed successfully"}
 // 400 {error: "missing fields", missingFields}
+// 400 {error: "Wrong status"}
 // 401 {error: "user not found with the given token"}
 // 403 {error: "User not authorized"}
-// 400 {error: "Query error"}
-// 400 {error: "Task not found"}
+// 404 {error: "Task not found"}
 const modificaStatoTaskRouter = express.Router();
 
 
@@ -110,7 +110,7 @@ modificaStatoTaskRouter.post('/', async (req, res) => {
     if (! await taskExists(req)) {
         let e = {'value': 'Task not found'};
         dbg("(ERROR)", JSON.stringify(e));
-        res.status(400);
+        res.status(404);
         res.json(e);
         return;
     }
