@@ -10,7 +10,7 @@
     "start": "concurrently \" npm run startback\" \" npm run startfront\" ",
     "production": "concurrently \" npm run startback\" \" serve -l 3002 -s build\" ",
     "lint": "eslint . --ext .ts",
-    "test": "jest"
+    "test": "jest --clearCache && jest -i"
   },
   "proxy": "",
   "keywords": [],

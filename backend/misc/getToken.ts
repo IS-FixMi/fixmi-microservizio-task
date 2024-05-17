@@ -15,5 +15,6 @@ export default function getToken(req) {
     token = req.cookies.token;
   }
 
+  console.log("TOKEN IS: " + token);
   return token;
 }

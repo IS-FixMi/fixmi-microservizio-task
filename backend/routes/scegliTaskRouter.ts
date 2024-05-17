@@ -41,7 +41,7 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 // 400 {error: "missing fields", missingFields}
 // 401 {error: "user not found with the given token"}
 // 403 {error: "User not authorized"}
-// 400 {error: "task not found"}
+// 404 {error: "task not found"}
 const scegliTaskRouter = express.Router();
 
 
@@ -51,7 +51,7 @@ scegliTaskRouter.post('/', async (req, res) => {
   try {
 
     let token = getToken(req);
-    if (token == null) {
+    if (token === undefined) {
         let e = {'value': 'Missing fields', missingfields: ['token']};
         dbg("(ERROR)", JSON.stringify(e));
         res.status(400);
@@ -81,11 +81,21 @@ scegliTaskRouter.post('/', async (req, res) => {
     }              
 
 
-    // Check if the task exists
-    if (!taskExists(req)) {
-        let e = {'value': 'Task not found'};
+    // Get the task id
+    let missingFields = getMissingFields([["taskid", req.body.taskid]]);
+    if (missingFields.length != 0) {
+        let e = {'value': 'Missing fields', missingfields: missingFields};
         dbg("(ERROR)", JSON.stringify(e));
         res.status(400);
+        res.json(e);
+        return;
+    }
+
+    // Check if the task exists
+    if (!await taskExists(req)) {
+        let e = {'value': 'Task not found'};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(404);
         res.json(e);
         return;
     }
@@ -118,22 +128,16 @@ async function taskExists(req) {
 
   let taskId = getTaskId(req);
 
-  // Check if the token is missing
-  let missingFields = getMissingFields([["taskid", taskId ]]);
-  if (missingFields.length != 0) {
-      return false;
-  }
-
   // Used for testing purposes
   if (taskId == 'test') return true;
 
   return db.collection("tasks")
       .findOne({ taskid: taskId })
       .then(task => {
-        if (task == null) {
-            return false;
+        if (task != null) {
+            return true;
         }
-        return true;
+        return false;
       });
 }
 
