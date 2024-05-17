@@ -37,10 +37,10 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 // - taskid
 //
 // responses:
-// 200 {task1, task2, ...}
+// 200 {Success: "Task assigned to the user"}
 // 400 {error: "missing fields", missingFields}
-// 400 {error: "user not found with the given token"}
-// 400 {error: "User not authorized"}
+// 401 {error: "user not found with the given token"}
+// 403 {error: "User not authorized"}
 // 400 {error: "task not found"}
 const scegliTaskRouter = express.Router();
 
@@ -65,7 +65,7 @@ scegliTaskRouter.post('/', async (req, res) => {
     if (profile == null) {
         let e = {'value': 'User not found with the given token'};
         dbg("(ERROR)", JSON.stringify(e));
-        res.status(400);
+        res.status(401);
         res.json(e);
         return;
     }
@@ -75,7 +75,7 @@ scegliTaskRouter.post('/', async (req, res) => {
     if (!isAuthorized(profile)) {
         let e = {'value': 'User not authorized'};
         dbg("(ERROR)", JSON.stringify(e));
-        res.status(400);
+        res.status(403);
         res.json(e);
         return;
     }              
