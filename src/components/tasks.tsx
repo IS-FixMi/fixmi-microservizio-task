@@ -23,6 +23,12 @@ export default function Tasks() {
     fetchData();
   }, []);
 
+  const handleOpenTask = (taskId) => {
+    // Perform actions to open the task with taskId
+    history.push(`/visualizzaTask/${taskId}`);
+
+  };
+
   return (
     <div className="container mx-auto py-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
@@ -30,7 +36,8 @@ export default function Tasks() {
           res.length > 0 &&
           res.map((item) => (
             <div key={item._id} className="rounded-lg overflow-hidden shadow-lg">
-              <Task task={item} />
+              {/* Pass onOpen function to Task component */}
+              <Task task={item} onOpen={handleOpenTask} />
             </div>
           ))}
       </div>

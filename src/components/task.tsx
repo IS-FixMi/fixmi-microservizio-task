@@ -1,6 +1,12 @@
 import React from "react";
 
-export default function Task({ task }) {
+export default function Task({ task, onOpen }) {
+  const handleOpenClick = () => {
+    // Call the onOpen function passed from the parent component
+    // and pass the task ID or any other relevant data
+    onOpen(task.taskid);
+  };
+
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-lg">
       <img
@@ -46,7 +52,10 @@ export default function Task({ task }) {
           </div>
         </div>
         <div className="mt-4 flex justify-between items-center">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
+          <button 
+            className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+            onClick={handleOpenClick}
+          >
             Apri
           </button>
           <p className="text-xs text-gray-600">ID: {task.taskid}</p>
