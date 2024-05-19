@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/app.ts",
+  "homepage": "./",
   "scripts": {
     "startfront": "PORT=$(cat .env | grep  REACT_APP_FRONTEND_PORT= | cut -d\"=\" -f2) npx react-scripts start",
     "buildfront": "PORT=$(cat .env | grep  REACT_APP_BACKEND_PORT= | cut -d\"=\" -f2)  npx react-scripts build",
