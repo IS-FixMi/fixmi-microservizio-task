@@ -38,11 +38,11 @@ import { ObjectId } from 'mongodb'
 // - taskid
 //
 // responses:
-// 200 {task1, task2, ...}
+// 200 {Success: "Task assigned to the user"}
 // 400 {error: "missing fields", missingFields}
-// 400 {error: "user not found with the given token"}
-// 400 {error: "User not authorized"}
-// 400 {error: "task not found"}
+// 401 {error: "user not found with the given token"}
+// 403 {error: "User not authorized"}
+// 404 {error: "task not found"}
 const scegliTaskRouter = express.Router();
 
 
@@ -52,52 +52,67 @@ scegliTaskRouter.post('/', async (req, res) => {
   try {
 
     let token = getToken(req);
+    if (token === undefined) {
+        let e = {'value': 'Missing fields', missingfields: ['token']};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
+    }
 
 
     // Check authentication
-    getProfileInfo(token).then(profile => {
+    let profile = await getProfileInfo(token);
+    if (profile == null) {
+        let e = {'value': 'User not found with the given token'};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(401);
+        res.json(e);
+        return;
+    }
 
 
     // Check authorization
     if (!isAuthorized(profile)) {
         let e = {'value': 'User not authorized'};
-        throw new JSONError(e);
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(403);
+        res.json(e);
+        return;
     }              
 
 
+    // Get the task id
+    let missingFields = getMissingFields([["taskid", req.body.taskid]]);
+    if (missingFields.length != 0) {
+        let e = {'value': 'Missing fields', missingfields: missingFields};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
+    }
+
     // Check if the task exists
-    taskExists(req).then(task => {
+    if (!await taskExists(req)) {
+        let e = {'value': 'Task not found'};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(404);
+        res.json(e);
+        return;
+    }
 
 
     // Query the DB
     let profileId = getProfileId(profile);
     let taskId = getTaskId(req);
-    executeQuery(profileId, taskId).then(ret => {
+    await executeQuery(profileId, taskId);
 
     // OK
     res.status(200);
     res.json({'Success': 'Task assigned to the user'});
 
-    // Errors
-    }).catch(e => { 
-      // DB error
-      dbg("(ERROR)", e);
-      res.status(400);
-      res.json(JSON.parse(e.message));
-    });}).catch(e => {
-      // task not found
-      res.status(400);
-      res.json(JSON.parse(e.message));
-    });}).catch(e => {
-      // user not authenticated
-      dbg("(ERROR)", e);
-      res.status(400);
-      res.json(JSON.parse(e.message));
-    });
-  
   }
   catch(e) {
-    // Missing fields / user not authorized
     dbg("(ERROR)", e);
     res.status(400);
     res.json(JSON.parse(e.message));
@@ -114,24 +129,16 @@ async function taskExists(req) {
 
   let taskId = getTaskId(req);
 
-  // Check if the token is missing
-  let missingFields = getMissingFields([["taskid", taskId ]]);
-  if (missingFields.length != 0) {
-    let e = {'value': 'Missing fields', missingfields: missingFields };
-    throw new JSONError(e);
-  }
-
   // Used for testing purposes
-  if (taskId == 'test') return;
+  if (taskId == 'test') return true;
 
   return db.collection("tasks")
       .findOne({ "taskid":new ObjectId(taskId) })
       .then(task => {
-        if (task == null) {
-          let e = {'value': 'Task not found'};
-          throw new JSONError(e);
+        if (task != null) {
+            return true;
         }
-        return task;
+        return false;
       });
 }
 
