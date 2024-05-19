@@ -1,14 +1,16 @@
 import Task from './Task';
-
-import TaskTag from '../enums/TaskTag';
-import TaskStatus from '../enums/TaskStatus';
+import { TaskTag } from '../enums/TaskTag';
 
 export default class TaskMagazzino extends Task {
 
-    constructor(name: String, description: String,
-                taskStatus: TaskStatus, taskid: Number) {
+    // Empty constructor
+    constructor();
 
-        super(name, description, 'Magazzino', taskStatus, taskid);
+    constructor(name: String, description: String);
+
+    constructor(name?: String, description?: String) {
+
+        super(name, description, TaskTag.Magazzino);
     }
 
     toJSON(): Object {
@@ -17,7 +19,8 @@ export default class TaskMagazzino extends Task {
             name: this.getName(),
             description: this.getDescription(),
             taskTag: this.getTaskTag(),
-            taskStatus: this.getStatus()
+            taskStatus: this.getStatus(),
+            assignedTo: this.getAssignedTo()
         };
     }
 

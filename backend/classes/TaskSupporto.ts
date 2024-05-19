@@ -1,15 +1,18 @@
 import Task from './Task';
-
-import TaskTag from '../enums/TaskTag';
-import TaskStatus from '../enums/TaskStatus';
+import { TaskTag } from '../enums/TaskTag';
 
 // Abstract
-export default class TaskSupporto extends Task {
+export default abstract class TaskSupporto extends Task {
 
+    // Empty constructor
+    constructor();
+    
     constructor(name: String, description: String,
-                taskTag: TaskTag, taskStatus: TaskStatus,
-                taskid: Number) {
+                taskTag: TaskTag);
 
-                super(name, description, taskTag, taskStatus, taskid);
+    constructor(name?: String, description?: String,
+                taskTag?: TaskTag) {
+
+                super(name, description, taskTag);
     }
 }
