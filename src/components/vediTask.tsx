@@ -2,11 +2,16 @@ import React from "react";
 
 export default function Task({ task, onOpen }) {
   const handleOpenClick = () => {
-    onOpen(task);
+    onOpen(task.taskid);
   };
 
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-lg">
+      <img
+        className="w-full h-48 object-cover object-center"
+        src="https://via.placeholder.com/800x500"
+        alt="Task Image"
+      />
       <div className="p-6 flex flex-col justify-between h-full">
         <div>
           <h3 className="text-xl font-semibold text-gray-800 mb-2">{task.name}</h3>

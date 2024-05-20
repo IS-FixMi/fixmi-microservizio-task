@@ -1,7 +1,7 @@
 /*
- *   File: home.tsx 
+ *   File: visualizzaTask.tsx 
  *
- *   Purpose: the home screen, rendered when accessing /
+ *   Purpose: Shows the list of tasks /
  *
  */ 
 

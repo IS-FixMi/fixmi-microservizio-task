@@ -30,16 +30,11 @@ export default function Navbar() {
           <ul className="font-large flex flex-col items-center md:items-start p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0">
             <li>
               <a href="#" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-blue-200 text-blue-800">
-                Informazioni
-              </a>
-            </li>
-            <li>
-              <a href="#" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-green-200 text-green-800">
                 Riparazione
               </a>
             </li>
             <li>
-              <a href="#" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-yellow-200 text-yellow-800">
+              <a href="#" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-green-200 text-green-800">
                 Assistenza
               </a>
             </li>
@@ -51,6 +46,11 @@ export default function Navbar() {
             <li>
               <a href="#" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-purple-200 text-purple-800">
                 Magazzino
+              </a>
+            </li>
+            <li>
+              <a href="/profile" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-yellow-200 text-yellow-800">
+                Profilo
               </a>
             </li>
           </ul>
