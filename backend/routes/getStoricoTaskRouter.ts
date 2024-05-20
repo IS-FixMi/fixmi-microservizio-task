@@ -41,7 +41,6 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 // 400 {error: "missing fields", missingFields}
 // 401 {error: "user not found with the given token"}
 // 403 {error: "User not authorized"}
-// 400 {error: "Query error"}
 const getStoricoTaskRouter = express.Router();
 
 

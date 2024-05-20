@@ -34,7 +34,7 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 // POST
 //
 // description:
-// This route lets anyone create a task
+// This route lets authenticated users create a task
 //
 // body / cookie:
 // token
@@ -60,7 +60,7 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 //   - numeroTelefono
 // 
 // responses:
-// 200 {task1, task2, ...}
+// 200 {Success: "class created" }
 // 400 {error: "missing fields", missingFields}
 // 401 {error: "User not found with the given token"}
 const creaTaskRouter = express.Router();
