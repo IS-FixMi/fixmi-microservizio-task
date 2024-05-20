@@ -44,7 +44,6 @@ const debug = true;
 // 400 {error: "missing fields", missingFields}
 // 401 {error: "user not found with the given token"}
 // 403 {error: "User not authorized"}
-// 400 {error: "Query error"}
 const getListaTaskInLavorazioneRouter = express.Router();
 
 
