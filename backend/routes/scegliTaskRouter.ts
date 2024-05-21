@@ -115,7 +115,7 @@ scegliTaskRouter.post('/', async (req, res) => {
   catch(e) {
     dbg("(ERROR)", e);
     res.status(400);
-    res.json(JSON.parse(e.message));
+    res.json(e);
   }
 
 
@@ -131,6 +131,10 @@ async function taskExists(req) {
 
   // Used for testing purposes
   if (taskId == 'test') return true;
+
+  if (! ObjectId.isValid(taskId)) {
+     return false;
+  }
 
   return db.collection("tasks")
       .findOne({ "taskid":new ObjectId(taskId) })
