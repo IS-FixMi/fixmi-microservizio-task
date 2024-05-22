@@ -2,6 +2,7 @@
   "name": "fixmi-microservice-template",
   "version": "1.0.0",
   "description": "",
+  "homepage": "./",
   "main": "src/app.ts",
   "scripts": {
     "startfront": "PORT=$(cat .env | grep  REACT_APP_FRONTEND_PORT= | cut -d\"=\" -f2) npx react-scripts start",

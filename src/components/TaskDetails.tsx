@@ -1,16 +1,38 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
+/*
+ *   File: visualizzaTask.tsx 
+ *
+ *   Purpose: Shows the list of tasks /
+ *
+ */
 
-export default function TaskDetails() {
-  const location = useLocation();
-  const task = location.state.task;
+import React from "react"
+import { ErrorBoundary } from 'react-error-boundary'
+import '../style.css'
+import Task from './vediTask.tsx'
+import Navbar from './navbar'
+import Footer from './footer'
 
-  // Now you can use the task object as needed
+export default function Home() {
+
+  // Use the Error Bundary system to catch errors
   return (
-    <div>
-      <h2>{task.taskName}</h2>
-      {/* Render other details of the task */}
-    </div>
+    <ErrorBoundary FallbackComponent={Fallback}>
+      <Navbar />
+      <Task />
+      <Footer />
+    </ErrorBoundary>
   );
 }
 
+export function Fallback({ error }) {
+
+  // This is important, don't delete it
+  console.error(error)
+
+  return (
+    <div>
+      <p>Something went wrong:</p>
+      <pre style={{ color: "red" }}>{error.message}</pre>
+    </div>
+  );
+}

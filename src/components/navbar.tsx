@@ -49,7 +49,7 @@ export default function Navbar() {
               </a>
             </li>
             <li>
-              <a href="/profile" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-yellow-200 text-yellow-800">
+              <a href="/auth" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-yellow-200 text-yellow-800">
                 Profilo
               </a>
             </li>

@@ -5,12 +5,12 @@ import TaskDetails from './components/TaskDetails.tsx';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename='tasks/'>
       <main>
         <Routes>
           {/* Routing */}
           <Route path="/" element={<VisualizzaTask />} />
-          <Route path="/task/task-details" element={<TaskDetails />} />
+          <Route path="task-details" element={<TaskDetails />} />
           <Route path="*" element={<VisualizzaTask />} />
         </Routes>
       </main>
