@@ -10,7 +10,7 @@ export function getTaskDaEseguire(token:string){
         headers:{"Content-Type": "application/x-www-form-urlencoded"},
         body: qs.stringify({token: token})
     }
-    return new Request(baseURL.concat("/api/tasks/getListaTaskInLavorazione"),options);
+    return new Request(baseURL.concat("/api/tasks/getListaTaskDaEseguire"),options);
 }
 
 export function getStoricoTask(token:string){

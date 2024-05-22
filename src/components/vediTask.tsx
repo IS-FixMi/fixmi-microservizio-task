@@ -1,73 +1,125 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function TaskDetails() {
   const location = useLocation();
+  const navigate = useNavigate();
   const task = location.state.task;
-
+  console.log(task);
   let additionalContent = null;
+  let actionButtons = null;
+
+  const handleClose = () => {
+    navigate("/tasks/");
+  };
+
+  switch (task.taskStatus) {
+    case "Da Eseguire":
+      actionButtons = (
+        <div className="flex justify-between w-full">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleClose}>Chiudi</button>
+          <button className="bg-yellow-500 text-white px-4 py-2 rounded">Prendi in carico</button>
+        </div>
+      );
+      break;
+    case "In Lavorazione":
+      actionButtons = (
+        <div className="flex justify-between w-full">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleClose}>Chiudi</button>
+          <button className="bg-orange-500 text-white px-4 py-2 rounded mx-auto">Metti in pausa</button>
+          <button className="bg-green-500 text-white px-4 py-2 rounded">Completa</button>
+        </div>
+      );
+      break;
+    case "Completata":
+      actionButtons = (
+        <div className="flex justify-start">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleClose}>Chiudi</button>
+        </div>
+      );
+      break;
+    case "In Pausa":
+      actionButtons = (
+        <div className="flex justify-between w-full">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleClose}>Chiudi</button>
+          <button className="bg-green-500 text-white px-4 py-2 rounded">Riprendi</button>
+        </div>
+      );
+      break;
+    default:
+      actionButtons = null;
+  }
 
   switch (task.taskTag) {
     case "Riparazione":
-      additionalContent = (<div>
-        <div>Nome del figlio di troia: {task.nomeRichiedente}</div>
-	<div>Cognome: {task.cognomeRichiedente}</div>
-	<div>telefono: {task.phoneNumber}</div>
-      </div>
+      additionalContent = (
+        <div className="text-center space-y-4">
+          <div><strong>Nome Richiedente</strong><br />{task.nomeRichiedente}</div>
+          <div><strong>Cognome Richiedente</strong><br />{task.cognomeRichiedente}</div>
+          <div><strong>Email Richiedente</strong><br />{task.emailRichiedente}</div>
+          <div><strong>Telefono Richiedente</strong><br />{task.phoneNumber}</div>
+        </div>
       );
       break;
     case "Assistenza":
-      additionalContent = <div>Additional content for Assistenza task</div>;
+      additionalContent = (
+        <div className="text-center space-y-4">
+          <div><strong>Email Richiedente</strong><br />{task.emailRichiedente}</div>
+        </div>
+      );
       break;
-    // Add more cases as needed for other task tags
+    case "Feedback":
+      additionalContent = (
+        <div className="text-center space-y-4">
+          <div><strong>Idee per Migliorare</strong><br />{task.ideePerMigliorare}</div>
+          <div><strong>Soddisfazione della riparazione</strong><br />{task.soddisfazioneRiparazione}</div>
+          <div><strong>Velocità della riparazione</strong><br />{task.velocitaRiparazione}</div>
+          <div><strong>Soddisfazione della riparazione</strong><br />{task.soddisfazioneRiparazione}</div>
+          <div><strong>Disponibilità dell'azienda</strong><br />{task.disponibilitaAzienda}</div>
+        </div>
+      );
+      break;
     default:
       additionalContent = null;
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="bg-white rounded-lg overflow-hidden shadow-xl w-full h-full max-w-6xl max-h-4xl mx-auto">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white rounded-lg overflow-hidden shadow-xl w-full max-w-4xl mx-auto relative">
         <div className="p-8 flex flex-col justify-between h-full">
           <div>
-            <h3 className="text-5xl font-semibold text-center mb-6 text-gray-800">{task.name}</h3>
-            <p className="text-gray-600 text-center text-xl mb-4">{task.description}</p>
+            <h3 className="text-4xl font-semibold text-center mb-6 text-gray-800">{task.name}</h3>
             <div className="flex justify-center space-x-4 mb-4">
-              <span
-                className={`px-4 py-2 text-sm font-semibold rounded-full ${
-                  task.taskTag === "Riparazione"
-                    ? "bg-blue-200 text-blue-800"
-                    : task.taskTag === "Assistenza"
-                    ? "bg-green-200 text-green-800"
-                    : task.taskTag === "Feedback"
-                    ? "bg-yellow-200 text-yellow-800"
-                    : task.taskTag === "Negozio"
-                    ? "bg-red-200 text-red-800"
-                    : task.taskTag === "Magazzino"
-                    ? "bg-purple-200 text-purple-800"
-                    : "bg-gray-200 text-gray-800"
-                }`}
-              >
+              <span className={`px-4 py-2 text-sm font-semibold rounded-full ${
+                task.taskTag === "Riparazione" ? "bg-blue-200 text-blue-800" :
+                task.taskTag === "Assistenza" ? "bg-green-200 text-green-800" :
+                task.taskTag === "Feedback" ? "bg-yellow-200 text-yellow-800" :
+                task.taskTag === "Negozio" ? "bg-red-200 text-red-800" :
+                task.taskTag === "Magazzino" ? "bg-purple-200 text-purple-800" :
+                "bg-gray-200 text-gray-800"
+              }`}>
                 {task.taskTag}
               </span>
-              <span
-                className={`px-4 py-2 text-sm font-semibold rounded-full ${
-                  task.taskStatus === "Da Eseguire"
-                    ? "bg-red-200 text-red-800"
-                    : task.taskStatus === "In Lavorazione"
-                    ? "bg-yellow-200 text-yellow-800"
-                    : task.taskStatus === "Completata"
-                    ? "bg-green-200 text-green-800"
-                    : "bg-gray-200 text-gray-800"
-                }`}
-              >
+              <span className={`px-4 py-2 text-sm font-semibold rounded-full ${
+                task.taskStatus === "Da Eseguire" ? "bg-red-200 text-red-800" :
+                task.taskStatus === "In Lavorazione" ? "bg-yellow-200 text-yellow-800" :
+                task.taskStatus === "Completata" ? "bg-green-200 text-green-800" :
+                "bg-gray-200 text-gray-800"
+              }`}>
                 {task.taskStatus}
               </span>
             </div>
+            <p className="text-gray-600 text-center text-xl mb-4">{task.description}</p>
           </div>
-          <div className="mt-6 flex justify-center">
+          <div className="absolute top-0 right-0 mt-2 mr-2">
             <p className="text-sm text-gray-600">Task ID: {task.taskid}</p>
           </div>
-          {additionalContent}
+          <div className="mt-4">
+            {additionalContent}
+          </div>
+          <div className="bg-gray-100 p-4 mt-4">
+            {actionButtons}
+          </div>
         </div>
       </div>
     </div>

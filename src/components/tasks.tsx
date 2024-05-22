@@ -12,52 +12,65 @@ export default function Tasks() {
   const [typeFilter, setTypeFilter] = useState("Tutti");
   const [statusFilter, setStatusFilter] = useState("Tutti");
   const navigate = useNavigate();
-console.log(typeFilter);
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = () => {
       const token = Cookies.get('token');
-      if (token == undefined ) {
-        window.location.href="/auth";
-	return;
+      if (token === undefined) {
+        window.location.href = "/auth";
+        return;
       }
-      let apiCall;
+
+      const apiCalls = [];
       switch (statusFilter) {
         case 'Da Eseguire':
-          apiCall = getTaskDaEseguire;
+          apiCalls.push(getTaskDaEseguire(token));
           break;
         case 'Completata':
-          apiCall = getStoricoTask;
+          apiCalls.push(getStoricoTask(token));
           break;
         case 'In Pausa':
-          apiCall = getTaskInPausa;
+          apiCalls.push(getTaskInPausa(token));
           break;
         case 'In Lavorazione':
-          apiCall = getTaskInLavorazione;
+          apiCalls.push(getTaskInLavorazione(token));
+          break;
+        case 'Tutti':
+          apiCalls.push(
+            getTaskDaEseguire(token),
+            getStoricoTask(token),
+            getTaskInPausa(token),
+            getTaskInLavorazione(token)
+          );
           break;
         default:
-          apiCall = getTaskDaEseguire;
-          break;
+          apiCalls.push(
+            getTaskDaEseguire(token),
+            getStoricoTask(token),
+            getTaskInPausa(token),
+            getTaskInLavorazione(token)
+          );
+         break;
       }
 
-      fetch(apiCall(token))
-        .then(async (response) => {
-            console.log(response.status);
-            if(response.status === 200){
-              const body = await response.json();
-              setRes(body);
-            }else{
-              showBoundary(await response.json());
-            }
-	})
-	.catch((error) => {
-           showBoundary(error);
-	});
+      // Execute all API calls concurrently using Promise.all
+      Promise.all(apiCalls.map(call => fetch(call)))
+        .then(responses => Promise.all(responses.map(response => response.json())))
+        .then(results => {
+          const mergedResults = results.reduce((acc, curr) => acc.concat(curr), []); // Merge results into a single array
+          setRes(mergedResults); // Update state with merged results
+        })
+        .catch(error => {
+          showBoundary(error);
+        });
+    };
 
     fetchData();
-  }, [statusFilter, showBoundary, navigate]);
+  }, [statusFilter, typeFilter]);
 
   const handleOpenTask = (task) => {
     navigate("/task-details", { state: { task } });
+  };
 
   return (
     <div>
@@ -65,11 +78,17 @@ console.log(typeFilter);
       <div className="container mx-auto py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {res.length > 0 ? (
-            res.map((item) => (
-              <div key={item._id} className="rounded-lg overflow-hidden shadow-lg">
-                <Task task={item} onOpen={() => handleOpenTask(item)} />
-              </div>
-            ))
+            res.map((item) => {
+              // Check if task type matches selected type filter
+              if (typeFilter === "Tutti" || item.taskTag === typeFilter) {
+                return (
+                  <div key={item._id} className="rounded-lg overflow-hidden shadow-lg">
+                    <Task task={item} onOpen={() => handleOpenTask(item)} />
+                  </div>
+                );
+              }
+              return null; // Render nothing if task type doesn't match
+            })
           ) : (
             <p>No tasks found</p>
           )}
