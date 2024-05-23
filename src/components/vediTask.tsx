@@ -10,7 +10,7 @@ export default function TaskDetails() {
   let actionButtons = null;
 
   const handleClose = () => {
-    navigate("/tasks/");
+    navigate("../");
   };
 
   switch (task.taskStatus) {
@@ -72,10 +72,10 @@ export default function TaskDetails() {
       additionalContent = (
         <div className="text-center space-y-4">
           <div><strong>Idee per Migliorare</strong><br />{task.ideePerMigliorare}</div>
-          <div><strong>Soddisfazione della riparazione</strong><br />{task.soddisfazioneRiparazione}</div>
+          <div><strong>Disponibilità dell'azienda</strong><br />{task.disponibilitaAzienda}</div>
           <div><strong>Velocità della riparazione</strong><br />{task.velocitaRiparazione}</div>
           <div><strong>Soddisfazione della riparazione</strong><br />{task.soddisfazioneRiparazione}</div>
-          <div><strong>Disponibilità dell'azienda</strong><br />{task.disponibilitaAzienda}</div>
+          <div><strong>Soddisfazione del sito web</strong><br />{task.soddisfazioneSitoWeb}</div>
         </div>
       );
       break;

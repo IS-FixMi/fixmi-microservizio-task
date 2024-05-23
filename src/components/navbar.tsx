@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     <nav className="bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg sticky top-0 z-50">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+        <a href="/home" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img src={require("../assets/fixmi-logo.png")} className="h-8" alt="FixMi" />
         </a>
         <button
@@ -29,12 +29,12 @@ export default function Navbar() {
         <div className={`w-full md:flex md:w-auto ${isMenuOpen ? '' : 'hidden'}`} id="navbar-default">
           <ul className="font-large flex flex-col items-center md:items-start p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0">
             <li>
-              <a href="#" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-blue-200 text-blue-800">
+              <a href="/home/riparazione" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-blue-200 text-blue-800">
                 Riparazione
               </a>
             </li>
             <li>
-              <a href="#" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-green-200 text-green-800">
+              <a href="/home/assistenza" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-green-200 text-green-800">
                 Assistenza
               </a>
             </li>
@@ -43,9 +43,10 @@ export default function Navbar() {
                 Negozio
               </a>
             </li>
+{/*controllare se si è dipendente oppure user*/}
             <li>
-              <a href="#" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-purple-200 text-purple-800">
-                Magazzino
+              <a href="/tasks" className="block py-2 px-3 rounded dark:hover:bg-gray-700 dark:hover:text-white bg-purple-200 text-purple-800">
+                Tasks
               </a>
             </li>
             <li>
