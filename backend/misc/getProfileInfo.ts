@@ -24,8 +24,7 @@ export default async function getProfileInfo(token) {
   }).then(response => {
 
   if(!response.ok) {
-    let e = {'value': 'User not found with the given token'};
-    throw new JSONError(e);
+    return null;
   }
 
   return response.json();

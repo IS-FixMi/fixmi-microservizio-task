@@ -40,7 +40,7 @@ describe('Testing /api/tasks/modificaStatoTask', () => {
     const resLogin = await request('10.5.0.11:3001')
             .post('/api/auth/login')
             .type('form')
-            .send({email:"test@test.com",password:"test",twofa:"12345"});
+            .send({email:"manager@test.com",password:"test",twofa:"12345"});
     let token = resLogin.body.token;
 
     // sending the request
@@ -51,13 +51,13 @@ describe('Testing /api/tasks/modificaStatoTask', () => {
     expect(response.status).toBe(400);
   });
 
-  it('Sending the right token with the right taskid but with a wrong status, should return 200 OK', async () => {
+  it('Sending the right token with the right taskid but with a wrong status, should return 400 wrong status', async () => {
   
     // getting the token
     const resLogin = await request('10.5.0.11:3001')
             .post('/api/auth/login')
             .type('form')
-            .send({email:"test@test.com",password:"test",twofa:"12345"});
+            .send({email:"manager@test.com",password:"test",twofa:"12345"});
     let token = resLogin.body.token;
 
     // sending the request

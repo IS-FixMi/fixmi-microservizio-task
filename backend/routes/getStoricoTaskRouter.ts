@@ -41,7 +41,6 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 // 400 {error: "missing fields", missingFields}
 // 401 {error: "user not found with the given token"}
 // 403 {error: "User not authorized"}
-// 400 {error: "Query error"}
 const getStoricoTaskRouter = express.Router();
 
 
@@ -51,10 +50,23 @@ getStoricoTaskRouter.post('/', async (req, res) => {
   try {
 
     let token = getToken(req);
-
+    if (token === undefined) {
+        let e = {'value': 'Missing fields', missingfields: ['token']};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
+    }
 
     // Check authentication
-    getProfileInfo(token).then(profile => {
+    let profile = await getProfileInfo(token);
+    if (profile == null) {
+        let e = {'value': 'User not found with the given token'};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(401);
+        res.json(e);
+        return;
+    }
 
 
     // Get the profile id
@@ -65,7 +77,7 @@ getStoricoTaskRouter.post('/', async (req, res) => {
     // Check authorization
     if (!isAuthorized(profile)) {
         let e = {'value': 'User not authorized'};
-        dbg("(ERROR)", e);
+        dbg("(ERROR)", JSON.stringify(e));
         res.status(403);
         res.json(e);
         return;
@@ -73,7 +85,14 @@ getStoricoTaskRouter.post('/', async (req, res) => {
 
 
     // Query the DB
-    executeQuery(profileId, permission).then(allTasks => {
+    let allTasks = await executeQuery(profileId, permission);
+    if (allTasks === null) {
+       let e = {'value': 'Query error'};
+       dbg("(ERROR)", JSON.stringify(e));
+       res.status(400);
+       res.json(e);
+       return;
+    }
 
     dbg("AllTasks", JSON.stringify(allTasks));
     
@@ -81,22 +100,8 @@ getStoricoTaskRouter.post('/', async (req, res) => {
     // Return the tasks
     res.json(allTasks);
     
-    // Errors
-    }).catch(e => { 
-      // Error in the query
-      dbg("(ERROR)", e);
-      res.status(400);
-      res.json(JSON.parse(e.message));
-    });}).catch(e => { 
-      // User not found
-      dbg("(ERROR)", e);
-      res.status(401);
-      res.json(JSON.parse(e.message));
-    });
-  
   }
   catch(e) {
-    // Missing fields
     dbg("(ERROR)", e);
     res.status(400);
     res.json(JSON.parse(e.message));

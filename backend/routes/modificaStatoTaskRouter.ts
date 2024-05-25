@@ -30,7 +30,7 @@ import { ObjectId } from 'mongodb'
 // POST
 //
 // description:
-// This route lets anyone change the status of a task
+// This route lets quthenticated profiles change the status of a task
 //
 // body / cookie:
 // - token
@@ -40,12 +40,12 @@ import { ObjectId } from 'mongodb'
 // - taskStatus
 //
 // responses:
-// 200 {task1, task2, ...}
+// 200 {Success: "Task status changed successfully"}
 // 400 {error: "missing fields", missingFields}
+// 400 {error: "Wrong status"}
 // 401 {error: "user not found with the given token"}
 // 403 {error: "User not authorized"}
-// 400 {error: "Query error"}
-// 400 {error: "Task not found"}
+// 404 {error: "Task not found"}
 const modificaStatoTaskRouter = express.Router();
 
 
@@ -55,65 +55,77 @@ modificaStatoTaskRouter.post('/', async (req, res) => {
   try {
 
     let token = getToken(req);
+    dbg("Token", token); // qui il token a UNDEFINED DIO LUPO
+    if (token === undefined) {
+        let e = {'value': 'Missing fields', missingfields: ['token'] };
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
+    }
 
 
     // Check authentication
-    getProfileInfo(token).then(profile => {
-
+    let profile = await getProfileInfo(token);
+    if (profile === null) {
+        let e = {'value': 'User not found with the given token'};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(401);
+        res.json(e);
+        return;
+    }
 
     // Check authorization
     if (!isAuthorized(profile)) {
         let e = {'value': 'User not authorized'};
-        dbg("(ERROR)", e);
+        dbg("(ERROR)", JSON.stringify(e));
         res.status(403);
         res.json(e);
         return;
     }              
 
 
+    let taskId = getTaskId(req); 
+    let statusVal = getStatus(req);
+    let missingFields2 = getMissingFields([["taskid", taskId], ["taskStatus", statusVal]]);
+    if (missingFields2.length != 0) {
+        let e = {'value': 'Missing fields', missingfields: missingFields2 };
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
+    }
+
+
     // Check if the status is correct
-    checkStatus(req).then(statusVal => {
+    if (!checkStatus(statusVal)) {
+        let e = {'value': 'Wrong status'};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
+    }
 
 
     // Check if the task exists
-    taskExists(req).then(task => {
-
+    if (! await taskExists(req)) {
+        let e = {'value': 'Task not found'};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(404);
+        res.json(e);
+        return;
+    }
 
 
     // Query the DB
     let profileId = getProfileId(profile);
-    let taskId = getTaskId(req);
-    executeQuery(taskId, statusVal).then(ret => {
+    await executeQuery(taskId, statusVal);
 
     // OK
-    res.status(200);
     res.json({'Success': 'Task status changed successfully'});
-
-    // Errors
-    }).catch(e => { 
-      // DB error
-      dbg("(ERROR)", e);
-      res.status(400);
-      res.json(JSON.parse(e.message));
-    });}).catch(e => {
-      // task not found
-      res.status(400);
-      res.json(JSON.parse(e.message));
-    });}).catch(e => {
-      // status not valid
-      dbg("(ERROR)", e);
-      res.status(400);
-      res.json(JSON.parse(e.message));
-    });}).catch(e => {
-      // user not found
-      dbg("(ERROR)", e);
-      res.status(401);
-      res.json(JSON.parse(e.message));
-    });
   
   }
   catch(e) {
-    // Missing fields / user not authorized / wrong status
     dbg("(ERROR)", e);
     res.status(400);
     res.json(JSON.parse(e.message));
@@ -125,26 +137,22 @@ modificaStatoTaskRouter.post('/', async (req, res) => {
 export default modificaStatoTaskRouter;
 
 
+function getStatus(req) {
+   return req.body.taskStatus;
+}
+
+
 // Check if the status is correct
-async function checkStatus(req) {
-
-  let statusVal = req.body.taskStatus;
-
-  // Check if the token is missing
-  let missingFields = getMissingFields([["taskStatus", statusVal ]]);
-  if (missingFields.length != 0) {
-    let e = {'value': 'Missing fields', missingfields: missingFields };
-    throw new JSONError(e);
-  }
+function checkStatus(statusVal) {
 
   // Check if the status is a value in the enum
   if (!Object.values(TaskStatus).includes(statusVal)) {
-    let e = {'value': 'Wrong status'};
-    throw new JSONError(e);
+      return false;
   }
 
-  return statusVal;
+  return true;
 }
+
 
 // Check if a task exists with the given taskId
 async function taskExists(req) {
@@ -159,24 +167,25 @@ async function taskExists(req) {
   }
 
   // Used for testing purposes
-  if (taskId == 'test') return;
+  if (taskId == 'test') return true;
 
   return db.collection("tasks")
       .findOne({ taskid: new ObjectId(taskId) })
       .then(task => {
         if (task == null) {
-          let e = {'value': 'Task not found'};
-          throw new JSONError(e);
+            return false;
         }
-        return task;
+        return true;
       });
 }
+
 
 
 // Get the task id
 function getTaskId(req) {
   return req.body.taskid;
 }
+
 
 // Check if the user is authorized
 function isAuthorized(profile) {
@@ -206,6 +215,7 @@ async function executeQuery(taskId, statusVal) {
     return db.collection("tasks")
         .updateOne({ taskid: new ObjectId(taskId) }, { $set: { taskStatus: statusVal } });
 }
+
 
 // Prints a debug message if debug is enabled
 // name: the name of the variable

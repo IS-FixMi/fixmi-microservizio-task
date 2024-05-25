@@ -12,6 +12,8 @@ import getMissingFields from '../misc/missingFields'
 import JSONError from '../misc/JSONError'
 import cookieParser from 'cookie-parser'
 import { TaskTag } from '../enums/TaskTag'
+import getToken from '../misc/getToken'
+import getProfileInfo from '../misc/getProfileInfo'
 
 import Task from '../classes/Task';
 import TaskRiparazione from '../classes/TaskRiparazione';
@@ -32,7 +34,7 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 // POST
 //
 // description:
-// This route lets anyone create a task
+// This route lets authenticated users create a task
 //
 // body / cookie:
 // token
@@ -58,8 +60,9 @@ import {AUTH_IP, DEBUG} from '../server';   // Authentication
 //   - numeroTelefono
 // 
 // responses:
-// 200 {task1, task2, ...}
+// 200 {Success: "class created" }
 // 400 {error: "missing fields", missingFields}
+// 401 {error: "User not found with the given token"}
 const creaTaskRouter = express.Router();
 
 
@@ -68,7 +71,26 @@ creaTaskRouter.post('/', async (req, res) => {
 
   try {
 
-    // Get the task tag
+    let token = getToken(req);
+    if (token === undefined) {
+        let e = {'value': 'Missing fields', missingfields: ['token']};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(400);
+        res.json(e);
+        return;
+    }
+
+
+    // Check authentication
+    let profile = await getProfileInfo(token);
+    if (profile === null) {
+        let e = {'value': 'User not found with the given token'};
+        dbg("(ERROR)", JSON.stringify(e));
+        res.status(401);
+        res.json(e);
+        return;
+    }
+
     let taskTag = getTaskTag(req);
     // Get the task
     let task = getTask(req, taskTag);
