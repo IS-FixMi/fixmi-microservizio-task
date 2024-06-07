@@ -39,3 +39,55 @@ export function getTaskInLavorazione(token:string){
     }
     return new Request(baseURL.concat("/api/tasks/getListaTaskInLavorazione"),options);
 }
+
+export function prendiInCarico(taskid, token) {
+    const options  = {
+        method: "POST",
+        headers:{"Content-Type": "application/x-www-form-urlencoded"},
+        body: qs.stringify({
+            token: token,
+            taskid: taskid,
+            taskStatus: "In Lavorazione",
+       })
+    }
+    return fetch(baseURL.concat("/api/tasks/modificaStatoTask"), options);
+}
+
+export function mettiInPausa(taskid, token) {
+    const options  = {
+        method: "POST",
+        headers:{"Content-Type": "application/x-www-form-urlencoded"},
+        body: qs.stringify({
+            token: token,
+            taskid: taskid,
+            taskStatus: "In Pausa",
+       })
+    }
+    return fetch(baseURL.concat("/api/tasks/modificaStatoTask"), options);
+}
+
+export function Completa(taskid, token) {
+    const options  = {
+        method: "POST",
+        headers:{"Content-Type": "application/x-www-form-urlencoded"},
+        body: qs.stringify({
+            token: token,
+            taskid: taskid,
+            taskStatus: "Completata",
+       })
+    }
+    return fetch(baseURL.concat("/api/tasks/modificaStatoTask"), options);
+}
+
+export function Riprendi(taskid, token) {
+    const options  = {
+        method: "POST",
+        headers:{"Content-Type": "application/x-www-form-urlencoded"},
+        body: qs.stringify({
+            token: token,
+            taskid: taskid,
+            taskStatus: "In Lavorazione",
+       })
+    }
+    return fetch(baseURL.concat("/api/tasks/modificaStatoTask"), options);
+}

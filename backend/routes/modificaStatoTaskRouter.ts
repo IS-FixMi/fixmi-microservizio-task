@@ -30,7 +30,7 @@ import { ObjectId } from 'mongodb'
 // POST
 //
 // description:
-// This route lets quthenticated profiles change the status of a task
+// This route lets authenticated profiles change the status of a task
 //
 // body / cookie:
 // - token

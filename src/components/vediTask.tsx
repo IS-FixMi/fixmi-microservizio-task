@@ -1,11 +1,14 @@
 import React from "react";
+import Cookies from "js-cookie";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { prendiInCarico } from "../utils/connection.ts";
+import { mettiInPausa } from "../utils/connection.ts";
+import { Completa } from "../utils/connection.ts";
+import { Riprendi } from "../utils/connection.ts";
 export default function TaskDetails() {
   const location = useLocation();
   const navigate = useNavigate();
   const task = location.state.task;
-  console.log(task);
   let additionalContent = null;
   let actionButtons = null;
 
@@ -13,12 +16,73 @@ export default function TaskDetails() {
     navigate("../");
   };
 
+  function InCarico(e) {
+    console.log(task);
+    e.preventDefault(); // Prevent default form submission
+    const token = Cookies.get('token');
+    prendiInCarico(
+      task.taskid,
+      token
+    )
+    .then(response => {
+      console.log("Success", response);
+    })
+    .catch(error => {
+      console.error("Request failed", error);
+    });
+  }
+
+  function Ripresa(e) {
+    e.preventDefault(); // Prevent default form submission
+    const token = Cookies.get('token');
+    Riprendi(
+      task.taskid,
+      token
+    )
+    .then(response => {
+      console.log("Success", response);
+    })
+    .catch(error => {
+      console.error("Request failed", error);
+    });
+  }
+
+  function InPausa(e) {
+    e.preventDefault(); // Prevent default form submission
+    const token = Cookies.get('token');
+    mettiInPausa(
+      task.taskId,
+      token
+    )
+    .then(response => {
+      console.log("Success", response);
+    })
+    .catch(error => {
+      console.error("Request failed", error);
+    });
+  }
+
+  function Completata(e) {
+    e.preventDefault(); // Prevent default form submission
+    const token = Cookies.get('token');
+    Completa(
+      task.taskId,
+      token
+    )
+    .then(response => {
+      console.log("Success", response);
+    })
+    .catch(error => {
+      console.error("Request failed", error);
+    });
+  }
+
   switch (task.taskStatus) {
     case "Da Eseguire":
       actionButtons = (
         <div className="flex justify-between w-full">
           <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleClose}>Chiudi</button>
-          <button className="bg-yellow-500 text-white px-4 py-2 rounded">Prendi in carico</button>
+          <button className="bg-yellow-500 text-white px-4 py-2 rounded" onClick={InCarico}>Prendi in carico</button>
         </div>
       );
       break;
@@ -26,8 +90,8 @@ export default function TaskDetails() {
       actionButtons = (
         <div className="flex justify-between w-full">
           <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleClose}>Chiudi</button>
-          <button className="bg-orange-500 text-white px-4 py-2 rounded mx-auto">Metti in pausa</button>
-          <button className="bg-green-500 text-white px-4 py-2 rounded">Completa</button>
+          <button className="bg-orange-500 text-white px-4 py-2 rounded mx-auto" onClick={InPausa}>Metti in pausa</button>
+          <button className="bg-green-500 text-white px-4 py-2 rounded"onClick={Completata}>Completa</button>
         </div>
       );
       break;
@@ -42,7 +106,7 @@ export default function TaskDetails() {
       actionButtons = (
         <div className="flex justify-between w-full">
           <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleClose}>Chiudi</button>
-          <button className="bg-green-500 text-white px-4 py-2 rounded">Riprendi</button>
+          <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={Ripresa}>Riprendi</button>
         </div>
       );
       break;
