@@ -51,7 +51,7 @@ export default function TaskDetails() {
     e.preventDefault(); // Prevent default form submission
     const token = Cookies.get('token');
     mettiInPausa(
-      task.taskId,
+      task.taskid,
       token
     )
     .then(response => {
@@ -66,7 +66,7 @@ export default function TaskDetails() {
     e.preventDefault(); // Prevent default form submission
     const token = Cookies.get('token');
     Completa(
-      task.taskId,
+      task.taskid,
       token
     )
     .then(response => {
