@@ -4,7 +4,6 @@
   "description": "",
   "homepage": "./",
   "main": "src/app.ts",
-  "homepage": "./",
   "scripts": {
     "startfront": "PORT=$(cat .env | grep  REACT_APP_FRONTEND_PORT= | cut -d\"=\" -f2) npx react-scripts start",
     "buildfront": "PORT=$(cat .env | grep  REACT_APP_BACKEND_PORT= | cut -d\"=\" -f2)  npx react-scripts build",
@@ -45,6 +44,7 @@
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "jest": "^27.5.1",
+    "js-cookie": "^3.0.5",
     "mongodb": "^6.5.0",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.0.3",
