@@ -1,33 +1,21 @@
-/*
- *   File: App.ts 
- *
- *   Purpose: this file contains the parent of all components
- *
- */ 
-
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import React from 'react'
-import Home from './components/home'
-import Greet from './components/greet'
-import TestText from './components/testText'
+import React from 'react';
+import VisualizzaTask from './components/visualizzaTask';
+import TaskDetails from './components/TaskDetails.tsx';
 
 function App() {
-
   return (
-    <BrowserRouter>
+    <BrowserRouter basename='tasks/'>
       <main>
-          <Routes>
-            {/* Routing */}
-            <Route path="/" element={<Home />}/>
-            <Route path="/greet" element={<Greet />}/>
-            <Route path="/test" element={<TestText />}/>
-            <Route path="*" element={<Home />}/>
-          </Routes>
+        <Routes>
+          {/* Routing */}
+          <Route path="/" element={<VisualizzaTask />} />
+          <Route path="task-details" element={<TaskDetails />} />
+          <Route path="*" element={<VisualizzaTask />} />
+        </Routes>
       </main>
-
     </BrowserRouter>
   );
-
 }
 
 export default App;

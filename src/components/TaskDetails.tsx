@@ -1,38 +1,31 @@
 /*
- *   File: home.tsx 
+ *   File: visualizzaTask.tsx 
  *
- *   Purpose: the home screen, rendered when accessing /
+ *   Purpose: Shows the list of tasks /
  *
- */ 
+ */
 
 import React from "react"
 import { ErrorBoundary } from 'react-error-boundary'
 import '../style.css'
+import Task from './vediTask.tsx'
 import Navbar from './navbar'
-import Map from './map'
-import Loremipsum from './loremipsum'
-import Team from './team'
 import Footer from './footer'
 
 export default function Home() {
-  
+
   // Use the Error Bundary system to catch errors
   return (
     <ErrorBoundary FallbackComponent={Fallback}>
       <Navbar />
-      <ul className="space-y-30 py-36 px-10">
-        <Map />
-        <Loremipsum />
-        <Team />
-      </ul>
-
+      <Task />
       <Footer />
     </ErrorBoundary>
   );
 }
 
 export function Fallback({ error }) {
-    
+
   // This is important, don't delete it
   console.error(error)
 

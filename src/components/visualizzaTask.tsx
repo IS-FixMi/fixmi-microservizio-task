@@ -1,24 +1,25 @@
 /*
- *   File: greet.tsx 
+ *   File: visualizzaTask.tsx 
  *
- *   Purpose: the greet component, It makes a call to the
- *            backend at /api/greet and displays the message 
- *            on screen
+ *   Purpose: Shows the list of tasks /
  *
  */ 
 
 import React from "react"
 import { ErrorBoundary } from 'react-error-boundary'
-import GreetText from './greetText'
 import '../style.css'
+import Tasks from './tasks'
+import Navbar from './navbar'
+import Footer from './footer'
 
-
-export default function Greet() {
+export default function Home() {
   
   // Use the Error Bundary system to catch errors
   return (
     <ErrorBoundary FallbackComponent={Fallback}>
-      <GreetText />
+      <Navbar />
+      <Tasks />
+      <Footer />
     </ErrorBoundary>
   );
 }
